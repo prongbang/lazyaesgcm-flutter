@@ -17,19 +17,18 @@ abstract class LazyAesGcm {
 }
 
 class LazyAesGcm256 implements LazyAesGcm {
-  final algorithm = AesGcm.with256bits();
+  final _algorithm = AesGcm.with256bits();
 
   @override
   Future<String> encrypt(String plaintext, String key) async {
-    final nonce = algorithm.newNonce();
+    final nonce = _algorithm.newNonce();
     final secretKey = SecretKey(hex.decode(key));
-    final secretBox = await algorithm.encrypt(
+    final secretBox = await _algorithm.encrypt(
       utf8.encode(plaintext),
       nonce: nonce,
       secretKey: secretKey,
     );
     return hex.encode(secretBox.concatenation());
-    ;
   }
 
   @override
@@ -38,10 +37,10 @@ class LazyAesGcm256 implements LazyAesGcm {
     final secretKey = SecretKey(hex.decode(key));
     final secretBox = SecretBox.fromConcatenation(
       cipherBytes,
-      nonceLength: algorithm.nonceLength,
-      macLength: algorithm.macAlgorithm.macLength,
+      nonceLength: _algorithm.nonceLength,
+      macLength: _algorithm.macAlgorithm.macLength,
     );
-    final decrypted = await algorithm.decrypt(secretBox, secretKey: secretKey);
+    final decrypted = await _algorithm.decrypt(secretBox, secretKey: secretKey);
     return utf8.decode(decrypted);
   }
 }
